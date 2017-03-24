@@ -1,0 +1,218 @@
+#!/bin/bash
+
+AUTHOR="Tomáš Sandrini | tomas.sandrini@seznam.cz"
+DOSUDIR="$HOME/DosuNotes"
+MEDIADIR="media"
+NOTESDIR="notes"
+COMPILEDDIR="compiled"
+BLUE='\033[00;34m'
+RESTORE='\033[0m'
+RED='\033[00;31m'
+PURPLE='\033[0;35m'
+CURR_MONTH=`date +%m`
+CURR_YEAR=`date +%Y`
+CURR_DATE=`date +%d.%m.%Y`
+CURR_PRETTY_DATE=`date +%d_%m_%Y`
+SHORT_YEAR=$(echo "$CURR_YEAR" | tail -c 3)
+
+menu() (
+	clear
+
+	echo -en "$RESTORE
+|----------------------------------------------|
+| Welcome to $BLUE Do Something Useful menu$RESTORE (DoSU)  |
+| What would you like me to do ?	       |
+|----------------------------------------------|
+
+$RED 1:$RESTORE Write notes
+$RED 2:$RESTORE Compile notes
+$RED 3:$RESTORE Create new subject
+$RED 4:$RESTORE Exit please :)
+$RESTORE"
+	read input
+	
+	case $input in 
+
+		1)
+			writeNotes
+			;;
+		2)
+			compileNotes
+			;;
+		3)
+			makeNewSubject
+			menu
+			;;
+		4)
+			clear
+			exit
+			;;
+		*)
+			clear
+			echo -en "
+Invalid input !
+"
+			sleep 2
+			menu
+			;;
+	
+	esac
+)
+
+writeNotes() (
+	clear
+	echo -en "
+For which subject would you like to write notes?
+
+"
+	printSubjects
+	read input
+	target="$DOSUDIR/${SUBJECTS[$input - 1]}"
+	if [ -d "$target" ];
+		then
+			sleep 2
+			target_dir="$DOSUDIR/${SUBJECTS[$input - 1]}/$NOTESDIR/year_$SHORT_YEAR/month_$CURR_MONTH"
+			notes_count=$(ls -1q $target_dir/note_* 2>/dev/null | wc -l)
+			((notes_count++))
+			cat > $target_dir/note_$notes_count.md <<EOF
+---
+title: ${SUBJECTS[$input - 1]}
+author: $AUTHOR
+date: $CURR_DATE
+subject: ${SUBJECTS[$input - 1]}
+lector:
+note-number: $notes_count
+...
+
+EOF
+			clear
+			vim $target_dir/note_$notes_count.md
+		else
+			echo -en "
+Invalid input!
+"
+			sleep 2
+			menu
+	fi
+)
+
+compileNotes() (
+	clear
+	echo -en "
+For which subject would you like to compile notes?
+
+"
+	printSubjects
+	read subjectInput
+	
+	if [ -d "$DOSUDIR/${SUBJECTS[$subjectInput - 1]}" ];
+		then
+			echo -en "
+Enter months of current year $RED<$CURR_YEAR>$RESTORE which you want to compile separated by spaces:
+
+"
+			read months
+			echo -en "
+Compiling notes ...
+"
+			months=($months)	
+
+			cd $DOSUDIR/${SUBJECTS[$subjectInput - 1]}
+			for month in "${months[@]}"
+			do
+				printf -v month "%02d" $month 
+				target="$NOTESDIR/year_$SHORT_YEAR/month_$month"
+				if [ -d "$target" ];
+					then
+						notes_count=$(ls -1q $target/note_* 2>/dev/null | wc -l)
+						for (( i=1; i<=$notes_count; i++))
+						do
+							params=" $params $target/note_$i.md"
+						done
+				fi
+			done
+			pandoc $params -o $COMPILEDDIR/comp_$CURR_PRETTY_DATE.pdf
+
+			clear
+			echo -en "
+Notes has been $RED successfuly $RESTORE compiled !			
+"
+			sleep 2
+			menu
+		else
+			echo -en "
+Invalid input!		
+"
+			sleep 2
+			menu
+	fi
+)
+
+printSubjects() (
+	i=0
+	for subject in "${SUBJECTS[@]}"
+	do
+		echo -en "$RED $((++i)):$RESTORE $subject
+"
+	done
+
+)
+
+makeNewSubject() (
+	clear
+	echo -en "
+$RESTORE Name of the new created subject:
+"
+	read input	
+	if [ ! -d "$DOSUDIR/$input" ];
+		then 	
+			echo "Creating subject directories ..."
+			mkdir "$DOSUDIR/$input"
+			mkdir "$DOSUDIR/$input/$MEDIADIR"
+			mkdir "$DOSUDIR/$input/$COMPILEDDIR"
+			mkdir "$DOSUDIR/$input/$NOTESDIR"
+			mkdir "$DOSUDIR/$input/$NOTESDIR/year_$SHORT_YEAR"
+
+			for i in {1..12}
+			do
+				printf -v i "%02d" $i
+				mkdir "$DOSUDIR/$input/$NOTESDIR/year_$SHORT_YEAR/month_$i"
+			done	
+
+			sleep 2
+		else
+			echo "Subject already exists."
+			sleep 2 
+			makeNewSubject
+
+	fi
+)
+
+init() (
+
+	if [ ! -d "$DOSUDIR" ]; 
+		then
+			mkdir -p "$DOSUDIR"
+	fi
+)
+
+init
+
+SUBJECTS=($(ls $DOSUDIR))
+
+case $# in
+	
+	0)
+		menu
+		;;
+	1)
+		echo $1	
+		;;
+	2)
+		echo "3"
+		;;
+	*)
+		echo "default"
+		;;
+
+esac
