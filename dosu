@@ -1,7 +1,7 @@
 #!/bin/bash
 
-AUTHOR="Tomáš Sandrini | tomas.sandrini@seznam.cz"
-DOSUDIR="$HOME/DosuNotes"
+DOSU_AUTHOR="author | <author@email.com>"
+DOSU_BASEDIR="$HOME/DosuNotes"
 MEDIADIR="media"
 NOTESDIR="notes"
 COMPILEDDIR="compiled"
@@ -67,17 +67,17 @@ For which subject would you like to write notes?
 "
 	printSubjects
 	read input
-	target="$DOSUDIR/${SUBJECTS[$input - 1]}"
+	target="$DOSU_BASEDIR/${SUBJECTS[$input - 1]}"
 	if [ -d "$target" ];
 		then
 			sleep 2
-			target_dir="$DOSUDIR/${SUBJECTS[$input - 1]}/$NOTESDIR/year_$SHORT_YEAR/month_$CURR_MONTH"
+			target_dir="$DOSU_BASEDIR/${SUBJECTS[$input - 1]}/$NOTESDIR/year_$SHORT_YEAR/month_$CURR_MONTH"
 			notes_count=$(ls -1q $target_dir/note_* 2>/dev/null | wc -l)
 			((notes_count++))
 			cat > $target_dir/note_$notes_count.md <<EOF
 ---
 title: ${SUBJECTS[$input - 1]}
-author: $AUTHOR
+author: $DOSU_AUTHOR
 date: $CURR_DATE
 subject: ${SUBJECTS[$input - 1]}
 lector:
@@ -105,7 +105,7 @@ For which subject would you like to compile notes?
 	printSubjects
 	read subjectInput
 	
-	if [ -d "$DOSUDIR/${SUBJECTS[$subjectInput - 1]}" ];
+	if [ -d "$DOSU_BASEDIR/${SUBJECTS[$subjectInput - 1]}" ];
 		then
 			echo -en "
 Enter months of current year $RED<$CURR_YEAR>$RESTORE which you want to compile separated by spaces:
@@ -117,21 +117,21 @@ Compiling notes ...
 "
 			months=($months)	
 
-			cd $DOSUDIR/${SUBJECTS[$subjectInput - 1]}
+			cd $DOSU_BASEDIR/${SUBJECTS[$subjectInput - 1]}
 			for month in "${months[@]}"
 			do
 				printf -v month "%02d" $month 
 				target="$NOTESDIR/year_$SHORT_YEAR/month_$month"
 				if [ -d "$target" ];
 					then
-						notes_count=$(ls -1q $target/note_* 2>/dev/null | wc -l)
+						notes_count=$(ls -1q $target/note_*.md 2>/dev/null | wc -l)
 						for (( i=1; i<=$notes_count; i++))
 						do
 							params=" $params $target/note_$i.md"
 						done
 				fi
 			done
-			pandoc $params -o $COMPILEDDIR/comp_$CURR_PRETTY_DATE.pdf
+                        pandoc$params -o $COMPILEDDIR/comp_$CURR_PRETTY_DATE.pdf >> $DOSU_BASEDIR/error.log
 
 			clear
 			echo -en "
@@ -164,19 +164,19 @@ makeNewSubject() (
 $RESTORE Name of the new created subject:
 "
 	read input	
-	if [ ! -d "$DOSUDIR/$input" ];
+	if [ ! -d "$DOSU_BASEDIR/$input" ];
 		then 	
 			echo "Creating subject directories ..."
-			mkdir "$DOSUDIR/$input"
-			mkdir "$DOSUDIR/$input/$MEDIADIR"
-			mkdir "$DOSUDIR/$input/$COMPILEDDIR"
-			mkdir "$DOSUDIR/$input/$NOTESDIR"
-			mkdir "$DOSUDIR/$input/$NOTESDIR/year_$SHORT_YEAR"
+			mkdir "$DOSU_BASEDIR/$input"
+			mkdir "$DOSU_BASEDIR/$input/$MEDIADIR"
+			mkdir "$DOSU_BASEDIR/$input/$COMPILEDDIR"
+			mkdir "$DOSU_BASEDIR/$input/$NOTESDIR"
+			mkdir "$DOSU_BASEDIR/$input/$NOTESDIR/year_$SHORT_YEAR"
 
 			for i in {1..12}
 			do
 				printf -v i "%02d" $i
-				mkdir "$DOSUDIR/$input/$NOTESDIR/year_$SHORT_YEAR/month_$i"
+				mkdir "$DOSU_BASEDIR/$input/$NOTESDIR/year_$SHORT_YEAR/month_$i"
 			done	
 
 			sleep 2
@@ -190,29 +190,24 @@ $RESTORE Name of the new created subject:
 
 init() (
 
-	if [ ! -d "$DOSUDIR" ]; 
+	if [ ! -d "$DOSU_BASEDIR" ]; 
 		then
-			mkdir -p "$DOSUDIR"
+			mkdir -p "$DOSU_BASEDIR"
 	fi
+
+
+        if [! -f "$HOME/.dosu_config"];
+            then
+                source "$HOME/.dosu_config"
+            else
+                touch "$HOME/.dosu_config"
+        fi
+
 )
 
 init
 
-SUBJECTS=($(ls $DOSUDIR))
+        cd $DOSU_BASEDIR
+SUBJECTS=($(ls -d */))
 
-case $# in
-	
-	0)
-		menu
-		;;
-	1)
-		echo $1	
-		;;
-	2)
-		echo "3"
-		;;
-	*)
-		echo "default"
-		;;
-
-esac
+menu
