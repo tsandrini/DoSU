@@ -1,0 +1,3 @@
+general:
+    key: 'value'
+    root_dir: '/home/tomas/DosuNotes'
