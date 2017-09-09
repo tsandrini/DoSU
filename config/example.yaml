@@ -1,3 +1,5 @@
 general:
-    key: 'value'
-    root_dir: '/home/tomas/DosuNotes'
+    root_dir: '/home/tomas/Projekty/DoSU/htdocs/tmp/notes/'
+
+templates:
+    subject_dir: '/home/tomas/Projekty/DoSU/htdocs/dosu/dosu/templates/subject'
