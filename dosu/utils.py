@@ -23,9 +23,8 @@ from .settings import HOME
 class Config:
 
     config_paths = (
-        HOME + '/.config/dosu/config.yaml',
-        HOME + '/.dosu.yaml',
-        HOME + '/Projekty/DoSU/htdocs/dosu/config/example.yaml',
+        HOME + '/.config/dosu/config.yml',
+        HOME + '/.dosu.yml',
     )
 
     def __init__(self):

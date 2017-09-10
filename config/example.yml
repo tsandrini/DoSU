@@ -1,5 +1,6 @@
 general:
     root_dir: '/home/tomas/Projekty/DoSU/htdocs/tmp/notes'
+    terminal: 'urxvt'
 
 writing:
     editor: 'vim'

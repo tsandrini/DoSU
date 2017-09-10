@@ -128,4 +128,6 @@ def write(subject):
     if config.get('writing.open_editor'):
         subprocess.Popen([config.get('writing.editor'), path])
 
+    sys.exit(0)
+
     return True

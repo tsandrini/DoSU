@@ -26,7 +26,7 @@ def get_args(args):
     """
     Get the script arguments.
     """
-    description = "dosu - note writing utility"
+    description = "DoSU - pandoc note writing utility"
     arg = argparse.ArgumentParser(description=description)
 
     arg.add_argument(
@@ -50,7 +50,7 @@ def get_args(args):
 
     arg.add_argument(
         '-v',
-        metavar='version',
+        action='store_true',
         help="Print current dosu version"
     )
 
