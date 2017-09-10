@@ -134,6 +134,6 @@ def write(subject):
         cmd.append(path)
         subprocess.Popen(cmd)
 
-    os.system('exit')
+    os.exit(0)
 
     return True
