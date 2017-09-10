@@ -125,11 +125,13 @@ def write(subject):
         tmp_pdf_path = subject_dir + '/' + '.tmp.pdf'
         subprocess.Popen(['pandoc', path, '-o', tmp_pdf_path]).wait()
 
-        cmd = shlex.split(config.get('writing.reader')) + tmp_pdf_path
+        cmd = shlex.split(config.get('writing.reader'))
+        cmd.append(tmp_pdf_path)
         subprocess.Popen(cmd)
 
     if config.get('writing.open_editor'):
-        cmd = shlex.split(config.get('writing.editor')) + path
+        cmd = shlex.split(config.get('writing.editor'))
+        cmd.append(path)
         subprocess.Popen(cmd)
 
     os.system('exit')
