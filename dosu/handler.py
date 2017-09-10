@@ -20,6 +20,7 @@ import errno
 import time
 import fnmatch
 import subprocess
+import shlex
 from datetime import datetime
 from distutils.dir_util import copy_tree
 
@@ -119,16 +120,18 @@ def write(subject):
     with open(path, 'w') as f:
         f.write(meta)
 
-    devnull = open(os.devnull, 'w')
-
     if config.get('writing.open_reader'):
 
         tmp_pdf_path = subject_dir + '/' + '.tmp.pdf'
         subprocess.Popen(['pandoc', path, '-o', tmp_pdf_path]).wait()
-        subprocess.Popen([config.get('writing.reader'), tmp_pdf_path], stdout=devnull, stderr=devnull)
+
+        cmd = shlex.split(config.get('writing.reader')) + tmp_pdf_path
+        subprocess.Popen(cmd)
 
     if config.get('writing.open_editor'):
-        subprocess.Popen(['vim', path], stdout=devnull, stderr=devnull).wait()
-        # os.system(config.get('writing.editor') + ' ' + path + ' &')
+        cmd = shlex.split(config.get('writing.editor')) + path
+        subprocess.Popen(cmd)
+
+    os.system('exit')
 
     return True
