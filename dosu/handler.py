@@ -123,10 +123,12 @@ def write(subject):
 
         tmp_pdf_path = subject_dir + '/' + '.tmp.pdf'
         subprocess.Popen(['pandoc', path, '-o', tmp_pdf_path]).wait()
-        subprocess.Popen([config.get('writing.reader'), tmp_pdf_path])
+        subprocess.Popen([config.get('writing.reader'), tmp_pdf_path], close_fds=True)
 
     if config.get('writing.open_editor'):
-        subprocess.Popen(['vim', path]).wait()
+        subprocess.Popen(['vim', path], close_fds=True)
         # os.system(config.get('writing.editor') + ' ' + path + ' &')
+
+    sys.exit(0)
 
     return True
