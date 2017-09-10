@@ -120,6 +120,7 @@ def write(subject):
     with open(path, 'w') as f:
         f.write(meta)
 
+    os.chdir(subject_dir)
     if config.get('writing.open_reader'):
 
         tmp_pdf_path = subject_dir + '/' + '.tmp.pdf'
@@ -132,7 +133,6 @@ def write(subject):
     if config.get('writing.open_editor'):
         cmd = shlex.split(config.get('writing.editor'))
         cmd.append(path)
-        subprocess.Popen(['cd', subject_dir])
         subprocess.Popen(cmd)
 
     sys.exit(0)
