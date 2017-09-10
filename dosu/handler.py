@@ -129,6 +129,4 @@ def write(subject):
         subprocess.Popen(['vim', path])
         # os.system(config.get('writing.editor') + ' ' + path + ' &')
 
-    sys.exit(0)
-
     return True
