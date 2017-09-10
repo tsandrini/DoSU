@@ -126,7 +126,7 @@ def write(subject):
         subprocess.Popen([config.get('writing.reader'), tmp_pdf_path])
 
     if config.get('writing.open_editor'):
-        subprocess.Popen(['urxvt', '-e', 'vim', path])
+        subprocess.Popen(['vim', path])
         # os.system(config.get('writing.editor') + ' ' + path + ' &')
 
     sys.exit(0)
