@@ -132,6 +132,7 @@ def write(subject):
     if config.get('writing.open_editor'):
         cmd = shlex.split(config.get('writing.editor'))
         cmd.append(path)
+        subprocess.Popen(['cd', subject_dir])
         subprocess.Popen(cmd)
 
     sys.exit(0)
