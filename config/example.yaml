@@ -1,5 +1,15 @@
 general:
-    root_dir: '/home/tomas/Projekty/DoSU/htdocs/tmp/notes/'
+    root_dir: '/home/tomas/Projekty/DoSU/htdocs/tmp/notes'
+
+writing:
+    editor: 'vim'
+    reader: 'xdg-open'
+    open_editor: true
+    open_reader: true
+
+author:
+    name: 'Tomáš Sandrini'
+    email: 'tomas.sandrini@seznam.cz'
 
 templates:
     subject_dir: '/home/tomas/Projekty/DoSU/htdocs/dosu/dosu/templates/subject'

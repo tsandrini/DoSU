@@ -13,32 +13,9 @@ Created by Tomáš Sandrini
 """
 
 
-import unittest
-import unittest.mock
-
-import os
+import string
 import random
 
-from dosu import __main__
-from dosu import handler
-from dosu.helpers import str_random
-from dosu import config
 
-
-class TestMain(unittest.TestCase):
-
-    def test_args_w(self):
-        subject = 'TestSubject' + str_random(5)
-        args = __main__.get_args(['-w', subject])
-        __main__.process_args(args)
-        self.assertTrue(handler.make.has_been_called)
-
-    def test_args_d(self):
-        subject = random.choice(config.subjects)
-        args = __main__.get_args(['-d', subject])
-        __main__.process_args(args)
-        self.assertTrue(handler.delete.has_been_called)
-
-
-if __name__ == "__main__":
-    unittest.main()
+def str_random(size=6, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))

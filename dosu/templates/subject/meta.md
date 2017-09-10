@@ -1,9 +1,9 @@
 ---
 title:
-author: %(settings.author.name) | tomas.sandrini@seznam.cz
-date: %(date)
-subject:
+author: %(name)s <%(email)s>
+date: %(date)s
+subject: %(subject)s
 lector:
-note-number:
+note-number: %(notes)d
 location:
 ...

@@ -17,10 +17,9 @@ import os
 import platform
 
 
+__version__ = '2.0.0'
 
-__version__ = "0.1.0"
 
-
-HOME = os.getenv("HOME", os.getenv("USERPROFILE"))
+HOME = os.getenv('HOME', os.getenv('USERPROFILE'))
 MODULE_DIR = os.path.dirname(__file__)
 OS = platform.uname()[0]

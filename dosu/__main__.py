@@ -29,24 +29,45 @@ def get_args(args):
     description = "dosu - note writing utility"
     arg = argparse.ArgumentParser(description=description)
 
-    arg.add_argument("-m", metavar="make",
-                     help="Make subject")
+    arg.add_argument(
+        '-m',
+        metavar='make',
+        nargs='+',
+        help="Make subject"
+    )
 
-    arg.add_argument("-c", metavar="compile",
-                     help="Compile notes for a given subject")
+    arg.add_argument(
+        '-c',
+        metavar='compile',
+        help="Compile notes for a given subject"
+    )
 
-    arg.add_argument("-w", metavar="write",
-                     help="Start writing notes for a given subject")
+    arg.add_argument(
+        '-w',
+        metavar='write',
+        help="Start writing notes for a given subject"
+    )
 
-    arg.add_argument("-v", metavar="version",
-                     help="Print current dosu version")
+    arg.add_argument(
+        '-v',
+        metavar='version',
+        help="Print current dosu version"
+    )
 
-    arg.add_argument("-q", action="store_true",
-            help="Quiet mode, don\"t print anything and \
-                    don't display notifications.")
+    arg.add_argument(
+        '-d',
+        metavar='delete',
+        nargs='+',
+        help="Deletes a subject"
+    )
 
-    arg.add_argument("-d", metavar="delete",
-            help="Deletes a subject")
+    arg.add_argument(
+        '-q',
+        action='store_true',
+        help="Quiet mode, don't print anything and \
+            don't display notifications."
+    )
+
 
     return arg.parse_args(args)
 
@@ -55,20 +76,23 @@ def process_args(args):
     """
     Process args.
     """
-    if not len(sys.argv) > 1:
-        print("error: wal needs to be given arguments to run.\n"
-              "       Refer to \"wal -h\" for more info.")
+    if not len(sys.argv) > 1 and False:
+        print("error: dosu needs to be given arguments to run.\n"
+              "       Refer to \"dosu -h\" for more info.")
         sys.exit(1)
 
     if args.v:
         print("dosu", __version__)
         sys.exit(0)
 
-    if args.w:
-        handler.make(args.w)
+    if args.m:
+        handler.make(args.m)
 
     if args.d:
         handler.delete(args.d)
+
+    if args.w:
+        handler.write(args.w)
 
     if args.q:
         sys.stdout = sys.stderr = open(os.devnull, 'w')

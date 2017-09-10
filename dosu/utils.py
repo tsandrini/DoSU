@@ -15,8 +15,6 @@ Created by Tomáš Sandrini
 
 import yaml
 import os
-import random
-import string
 
 
 from .settings import HOME
@@ -55,7 +53,7 @@ class Config:
             print ("DoSU root dir is not defined in config file")
             sys.exit(2)
 
-        return [name for name in os.listdir(base) if os.path.isdir(base + '/' + name)]
+        return set([name for name in os.listdir(base) if os.path.isdir(base + '/' + name)])
 
     def get(self, key, fallback=None):
         """
@@ -69,7 +67,11 @@ class Config:
         except KeyError as e:
             return fallback if fallback != None else key
 
-def str_random(size=6, chars=string.ascii_uppercase + string.digits):
-    return ''.join(random.choice(chars) for _ in range(size))
+
+def load_file(path):
+    with open(path, 'r') as f:
+        data = f.read()
+
+    return data
 
 config = Config()
