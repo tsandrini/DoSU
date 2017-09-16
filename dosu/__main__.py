@@ -18,6 +18,7 @@ import argparse
 import os
 import shutil
 import sys
+from datetime import datetime
 
 from . import handler
 
@@ -30,22 +31,44 @@ def get_args(args):
     arg = argparse.ArgumentParser(description=description)
 
     arg.add_argument(
-        '-m',
+        '-M',
         metavar='make',
         nargs='+',
-        help="Make subject"
+        help="Make given subjects"
     )
 
     arg.add_argument(
-        '-c',
+        '-C',
         metavar='compile',
-        help="Compile notes for a given subject"
+        nargs='+',
+        help="Compile notes for a given subjects"
     )
 
     arg.add_argument(
-        '-w',
+        '-W',
         metavar='write',
         help="Start writing notes for a given subject"
+    )
+
+    arg.add_argument(
+        '-D',
+        metavar='delete',
+        nargs='+',
+        help="Delete given subjects"
+    )
+
+    arg.add_argument(
+        '-m',
+        metavar='month',
+        nargs='+',
+        help="months"
+    )
+
+    arg.add_argument(
+        '-y',
+        metavar='year',
+        nargs='+',
+        help="years"
     )
 
     arg.add_argument(
@@ -55,19 +78,11 @@ def get_args(args):
     )
 
     arg.add_argument(
-        '-d',
-        metavar='delete',
-        nargs='+',
-        help="Deletes a subject"
-    )
-
-    arg.add_argument(
         '-q',
         action='store_true',
         help="Quiet mode, don't print anything and \
             don't display notifications."
     )
-
 
     return arg.parse_args(args)
 
@@ -81,21 +96,34 @@ def process_args(args):
               "       Refer to \"dosu -h\" for more info.")
         sys.exit(1)
 
-    if args.v:
-        print("dosu", __version__)
-        sys.exit(0)
+    if args.M:
+        handler.make(args.M)
 
-    if args.m:
-        handler.make(args.m)
+    if args.D:
+        handler.delete(args.D)
 
-    if args.d:
-        handler.delete(args.d)
+    if args.W:
+        handler.write(args.W)
 
-    if args.w:
-        handler.write(args.w)
+    if args.C:
+        today = datetime.today()
+
+        years = args.y if args.y != None else [today.year]
+        months = args.m if args.m != None else [today.month]
+
+        if args.y:
+            months = args.m if args.m else [i for i in range(13)][1:]
+        else:
+            months = args.m if args.m else [today.month]
+
+        handler.compile(subjects=args.C, years=years, months=months)
 
     if args.q:
         sys.stdout = sys.stderr = open(os.devnull, 'w')
+
+    if args.v:
+        print("dosu", __version__)
+        sys.exit(0)
 
 
 def main():

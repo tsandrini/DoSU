@@ -1,16 +1,47 @@
 general:
-    root_dir: '/home/tomas/Projekty/DoSU/htdocs/tmp/notes'
-    terminal: 'urxvt'
+    # Root dir where notes are stored
+    # Make sure that the target user has permission to write, read
+    root_dir: 'your/notes/root/dir'
 
 writing:
-    editor: 'vim'
-    reader: 'xdg-open'
+    # Whether an external editor should be automatically opened
     open_editor: true
+
+    # Whether an external reader should be automatically opened
     open_reader: true
 
-author:
-    name: 'Tomáš Sandrini'
-    email: 'tomas.sandrini@seznam.cz'
+    # Whether a meta file should be included in the freshly created note
+    #
+    # Note that even if set to false, subject name will be
+    # included in the note contents
+    # so pandoc can work properly (pandoc won't compile empty .md file)
+    include_meta: true
+
+    # Which editor should be used for writing if editor enabled
+    editor: 'vim'
+
+    # Which reader should be used for writing if reader enabled
+    reader: 'xdg-open'
 
 templates:
-    subject_dir: '/home/tomas/Projekty/DoSU/htdocs/dosu/dosu/templates/subject'
+    # Custom directory used as a base structure for creating other subjects
+    subject_dir: 'your/subject/dir'
+    year_dir_prefix: 'year_'
+    month_dir_prefix: 'month_'
+    note_prefix: 'note_'
+
+    # Where to store compiled output
+    compiled_dir: 'compiled'
+    # Source directory for all notes
+    notes_dir: 'notes'
+
+    # This file is going to be included in every note if enabled
+    meta_file: 'meta.md'
+
+    # Custom variables loaded in templates under 'config' index
+    # eg. meta_file
+    variables:
+
+        author:
+            name: 'Tomáš Sandrini'
+            email: 'tomas.sandrini@seznam.cz'

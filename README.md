@@ -1,16 +1,45 @@
 # DoSU
 
-## About DoSu
+## About
 
-**DoSU** is a handy note-taking tool which saves you a lot of energy when you take notes in a vim-like environment. It can automatically create filesystem for your new subject, automatically create new notes and compile notes from n months.
+__DoSU__ is a small note taking tool in a __pandoc-like__ environment.
+It's used to create subjects, write notes, compile notes with your desired structure and tools using pandoc.
 
-Current development status of DoSU is closed due to not having enough time and resources to enchance the power f DoSU, but I'm sure that someday I will :)
 
-## What does DoSu stand for ?
+What does DoSU stand for ?
 
 > DoSU = Do Something Useful :)
 
-## How can I install DoSU ?
+## About
 
-On a unix-like system you just need to download dosu source file and extract it in a proper folder (depends on your filesystem) and then add it to the global **$PATH** variable
+__DoSU__ is a small note taking tool in a __pandoc-like__ environment.
+It's used to create subjects, write notes, compile notes with your desired structure and tools using pandoc.
 
+## Setup
+
+### Dependencies
+
+- pip
+- pandoc
+
+### Installation
+
+´´´
+pip install git+git:://github.com/tsandrini/dosu.git
+´´´
+
+### Configuration
+
+Out of the box __DoSU__ expects from you a set of configuration.
+
+#### Config file
+
+Copy __config/example.yml__ to your desidered location.
+__DoSU__ will look for them in any of these given paths:
+
+´´´
+~/.config/dosu/config.yml
+~/.dosu.yml
+´´´
+
+Please pay attention to the config file and spend some time configuring your desired options.

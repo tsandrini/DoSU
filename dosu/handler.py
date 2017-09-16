@@ -81,6 +81,7 @@ def delete(subjects):
 def write(subject):
     if subject not in config.subjects:
         print ("Subject %s does not exist" % subject)
+        return False
 
     root_dir = config.get('general.root_dir')
 
@@ -88,11 +89,15 @@ def write(subject):
         print ("Root dir is not defined in config file")
         return False
 
+    note_prefix = config.get('templates.note_prefix')
     today = datetime.today()
     subject_dir = root_dir + '/' + subject
-    path = '%s/notes/year_%d/month_%02d' % (
+    path = '%s/%s/%s%d/%s%02d' % (
         subject_dir,
+        config.get('templates.notes_dir'),
+        config.get('templates.year_dir_prefix'),
         today.year % 1000,
+        config.get('templates.month_dir_prefix'),
         today.month
     )
 
@@ -103,17 +108,16 @@ def write(subject):
         if e.errno != errno.EEXIST:
             raise
         else:
-            note_number = len(fnmatch.filter(os.listdir(path), 'note_*.md'))
+            note_number = len(fnmatch.filter(os.listdir(path), note_prefix + '*.md'))
 
     note_number += 1
 
-    meta = load_file(subject_dir + '/meta.md') % {
-        'name': config.get('author.name'),
-        'email': config.get('author.email'),
-        'date': time.strftime('%d.%m.%Y'),
-        'subject': subject,
-        'number': note_number
-    }
+    meta = load_file(subject_dir + '/' + config.get('templates.meta_file')).format(
+        config=config.get('templates.variables'),
+        date=time.strftime('%d.%m.%Y'),
+        subject=subject,
+        note_number=note_number
+    )
 
     path += '/note_%d.md' % note_number
 
@@ -138,3 +142,68 @@ def write(subject):
     sys.exit(0)
 
     return True
+
+@trackcalls
+def compile(subjects, years, months):
+
+    root_dir = config.get('general.root_dir')
+
+    if not root_dir:
+        print ("Root dir is not defined in config file")
+        return False
+
+    for subject in subjects:
+
+        if subject not in config.subjects:
+            print ("Subject %s does not exist" % subject)
+            continue
+
+        today = datetime.today()
+        subject_dir = root_dir + '/' + subject
+        compiled_path = '%s/%s/%s_%02d_%02d_%d.pdf' % (
+            subject_dir,
+            config.get('templates.compiled_dir'),
+            subject.lower(),
+            today.day,
+            today.month,
+            today.year % 1000
+        )
+
+        os.chdir(subject_dir)
+
+        command = "pandoc -o %s " % compiled_path
+
+        for year in years:
+
+            year_dir = '%s/%s%d' % (
+                subject_dir,
+                config.get('templates.year_dir_prefix'),
+                year % 1000
+            )
+
+            if not os.path.isdir(year_dir):
+                print ("Subject %s has no notes for year %d" % (subject, year))
+                continue
+
+            for month in months:
+
+                month_dir = '%s/%s%02d' % (
+                    year_dir,
+                    config.get('templates.month_dir_prefix'),
+                    month
+                )
+
+                if not os.path.isdir(month_dir):
+                    print ("Subject %s has no notes for month %d in year %d" % (
+                        subject,
+                        month,
+                        year
+                    ))
+                    continue
+
+                command += '%s ' % month_dir
+
+        cmd = shlex.split(command)
+        subprocess.call(cmd)
+
+        return True
