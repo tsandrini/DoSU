@@ -4,8 +4,6 @@ __/\\\\\\\\\\\\______________________/\\\\\\\\\\\____/\\\________/\\\_
   _\/\\\______\//\\\________________\//\\\______\///__\/\\\_______\/\\\_
    _\/\\\_______\/\\\_____/\\\\\______\////\\\_________\/\\\_______\/\\\_
     _\/\\\_______\/\\\___/\\\///\\\_______\////\\\______\/\\\_______\/\\\_
-     _\/\\\_______\/\\\__/\\\__\//\\\_________\////\\\___\/\\\_______\/\\\_
-      _\/\\\_______/\\\__\//\\\__/\\\___/\\\______\//\\\__\//\\\______/\\\__
        _\/\\\\\\\\\\\\/____\///\\\\\/___\///\\\\\\\\\\\/____\///\\\\\\\\\/___
         _\////////////________\/////_______\///////////________\/////////_____
 
@@ -34,7 +32,7 @@ def get_args(args):
         '-M',
         metavar='make',
         nargs='+',
-        help="Make given subjects"
+        help="Make (create) given subjects"
     )
 
     arg.add_argument(
@@ -47,20 +45,21 @@ def get_args(args):
     arg.add_argument(
         '-W',
         metavar='write',
-        help="Start writing notes for a given subject"
+        help="Start note taking for a subject"
     )
 
     arg.add_argument(
         '-D',
         metavar='delete',
         nargs='+',
-        help="Delete given subjects"
+        help="Delete subjects"
     )
 
     arg.add_argument(
         '-m',
         metavar='month',
         nargs='+',
+        type=int,
         help="months"
     )
 
@@ -68,6 +67,7 @@ def get_args(args):
         '-y',
         metavar='year',
         nargs='+',
+        type=int,
         help="years"
     )
 
