@@ -14,13 +14,13 @@ Created by Tomáš Sandrini
 import argparse
 
 
-class ValidateMonths(argparse.action):
+class ValidateMonths(argparse.Action):
     def __call__(self, parser, args, values, option_string=None):
         months = [int(month) for month in args]
         setattr(args, self.dest, months)
 
 
-class ValidateYears(argparse.action):
+class ValidateYears(argparse.Action):
     def __call__(self, parser, args, values, option_string=None):
         years = [int(year) for years in args]
         setattr(args, self.dest, years)
