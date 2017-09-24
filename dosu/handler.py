@@ -119,7 +119,10 @@ def write(subject):
         note_number=note_number
     )
 
-    path += '/note_%d.md' % note_number
+    path += '/%s%d.md' % (
+        config.get('templates.note_prefix'),
+        note_number
+    )
 
     with open(path, 'w') as f:
         f.write(meta)
@@ -207,7 +210,8 @@ def compile(subjects, years, months):
                     config.get('templates.note_prefix')
                 )
 
-        cmd = shlex.split(command)
-        subprocess.call(cmd)
+        # cmd = shlex.split(command)
+        # subprocess.call(cmd)
+        os.system(command)
 
         return True
