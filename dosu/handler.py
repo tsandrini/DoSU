@@ -177,7 +177,7 @@ def compile(subjects, years, months):
 
             year_dir = '%s/%s/%s%d' % (
                 subject_dir,
-                config.get('temlates.notes_dir'),
+                config.get('templates.notes_dir'),
                 config.get('templates.year_dir_prefix'),
                 year % 1000
             )
