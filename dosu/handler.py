@@ -202,7 +202,10 @@ def compile(subjects, years, months):
                     ))
                     continue
 
-                command += '%s ' % month_dir
+                command += '%s/%s*.md ' % (
+                    month_dir,
+                    config.get('templates.note_prefix')
+                )
 
         cmd = shlex.split(command)
         subprocess.call(cmd)
