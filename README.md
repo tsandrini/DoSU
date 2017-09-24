@@ -30,7 +30,7 @@ What does DoSU stand for ?
 ### 3.2 Installation
 
 ```
-pip install git+git:://github.com/tsandrini/dosu.git
+pip install git+git://github.com/tsandrini/dosu.git
 ```
 
 ### 3.3 Configuration
