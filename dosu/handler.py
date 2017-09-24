@@ -210,8 +210,7 @@ def compile(subjects, years, months):
                     config.get('templates.note_prefix')
                 )
 
-        # cmd = shlex.split(command)
-        # subprocess.call(cmd)
+        # Call cannot be used here since we are using wildcards
         os.system(command)
 
         return True
