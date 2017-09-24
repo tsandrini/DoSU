@@ -2,13 +2,13 @@
 
 ## 1. Content
 
-1. Content
-2. About
-3. Setup
-    1. Dependencies
-    2. Installation
-    3. Configuration
-        1. Config file
+1. [Content](#1-content)
+2. [About](#2-about)
+3. [Setup](#3-setup)
+    1. [Dependencies](#31-dependencies)
+    2. [Installation](#32-installation)
+    3. [Configuration](#33-configuration)
+        1. [Config file](#331-config-file)
 
 ## 2. About
 
@@ -29,9 +29,9 @@ What does DoSU stand for ?
 
 ### 3.2 Installation
 
-´´´
+```
 pip install git+git:://github.com/tsandrini/dosu.git
-´´´
+```
 
 ### 3.3 Configuration
 
