@@ -16,11 +16,11 @@ import argparse
 
 class ValidateMonths(argparse.Action):
     def __call__(self, parser, args, values, option_string=None):
-        months = [int(month) for month in args]
+        months = [int(month) for month in values]
         setattr(args, self.dest, months)
 
 
 class ValidateYears(argparse.Action):
     def __call__(self, parser, args, values, option_string=None):
-        years = [int(year) for years in args]
+        years = [int(year) for years in values]
         setattr(args, self.dest, years)
