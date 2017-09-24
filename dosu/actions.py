@@ -22,5 +22,5 @@ class ValidateMonths(argparse.Action):
 
 class ValidateYears(argparse.Action):
     def __call__(self, parser, args, values, option_string=None):
-        years = [int(year) for years in values]
+        years = [int(year) for year in values]
         setattr(args, self.dest, years)
