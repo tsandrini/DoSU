@@ -19,7 +19,7 @@ import sys
 from datetime import datetime
 
 from . import handler
-
+from .actions import ValidateMonths, ValidateYears
 
 def get_args(args):
     """
@@ -59,7 +59,7 @@ def get_args(args):
         '-m',
         metavar='month',
         nargs='+',
-        type=int,
+        action=ValidateMonths,
         help="months"
     )
 
@@ -67,7 +67,7 @@ def get_args(args):
         '-y',
         metavar='year',
         nargs='+',
-        type=int,
+        action=ValidateYears,
         help="years"
     )
 
