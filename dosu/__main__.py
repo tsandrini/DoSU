@@ -73,21 +73,18 @@ def get_args(args):
 
     arg.add_argument(
         '-v',
-        metavar='version',
         action='store_true',
         help="Print current dosu version"
     )
 
     arg.add_argument(
         '-l',
-        metavar='list',
         action='store_true',
         help="List all subjects"
     )
 
     arg.add_argument(
         '-q',
-        metavar='quiet',
         action='store_true',
         help="Quiet mode, don't print anything and \
             don't display notifications."
@@ -104,6 +101,9 @@ def process_args(args):
         print("error: dosu needs to be given arguments to run.\n"
               "       Refer to \"dosu -h\" for more info.")
         sys.exit(1)
+
+    if args.q:
+        sys.stdout = sys.stderr = open(os.devnull, 'w')
 
     if args.M:
         handler.make(args.M)
@@ -127,8 +127,8 @@ def process_args(args):
 
         handler.compile(subjects=args.C, years=years, months=months)
 
-    if args.q:
-        sys.stdout = sys.stderr = open(os.devnull, 'w')
+    if args.l:
+        handler.list()
 
     if args.v:
         print("DoSU ", __version__)

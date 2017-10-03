@@ -228,7 +228,7 @@ def compile(subjects, years, months):
         return True
 
 @trackcalls
-def list(subjects):
+def list():
     """
     Lists subjects
     """
