@@ -32,6 +32,9 @@ from .decorators import trackcalls
 
 @trackcalls
 def make(subjects):
+    """
+    Makes (creates) given subjects
+    """
     subject_dir = config.get('templates.subject_dir')
     root_dir = config.get('general.root_dir')
 
@@ -58,6 +61,9 @@ def make(subjects):
 
 @trackcalls
 def delete(subjects):
+    """
+    Deletes given subjects
+    """
     root_dir = config.get('general.root_dir')
 
     if not root_dir:
@@ -79,6 +85,9 @@ def delete(subjects):
 
 @trackcalls
 def write(subject):
+    """
+    Starts notetaking for a given subject
+    """
     if subject not in config.subjects:
         print ("Subject %s does not exist" % subject)
         return False
@@ -148,6 +157,9 @@ def write(subject):
 
 @trackcalls
 def compile(subjects, years, months):
+    """
+    Compile notes for given subjects with selected years and months
+    """
 
     root_dir = config.get('general.root_dir')
 
@@ -214,3 +226,16 @@ def compile(subjects, years, months):
         os.system(command)
 
         return True
+
+@trackcalls
+def list(subjects):
+    """
+    Lists subjects
+    """
+
+    for subject in config.subjects:
+        print(subject)
+    else:
+        return True
+
+    return False

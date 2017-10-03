@@ -73,12 +73,21 @@ def get_args(args):
 
     arg.add_argument(
         '-v',
+        metavar='version',
         action='store_true',
         help="Print current dosu version"
     )
 
     arg.add_argument(
+        '-l',
+        metavar='list',
+        action='store_true',
+        help="List all subjects"
+    )
+
+    arg.add_argument(
         '-q',
+        metavar='quiet',
         action='store_true',
         help="Quiet mode, don't print anything and \
             don't display notifications."
@@ -122,7 +131,7 @@ def process_args(args):
         sys.stdout = sys.stderr = open(os.devnull, 'w')
 
     if args.v:
-        print("dosu", __version__)
+        print("DoSU ", __version__)
         sys.exit(0)
 
 
