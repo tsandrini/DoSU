@@ -52,7 +52,7 @@ def make(subjects):
             print ("Subject %s already exists" % subject)
             continue
 
-        copy_tree(subject_dir, root_dir + '/' + subject)
+        copy_tree(subject_dir, root_dir + '/' + subject, symlinks=True)
 
     else:
         return True
