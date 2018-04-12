@@ -3,6 +3,14 @@ general:
     # Make sure that the target user has permission to write, read
     root_dir: 'your/notes/root/dir'
 
+compiling:
+    # Additional arguments passed to pandoc during compilation
+    additional_arguments: '--number-sections'
+
+    # Header file which is compiled at the very first
+    # Useful for additional latex setup
+    header_file: 'header.md'
+
 writing:
     # Whether an external editor should be automatically opened
     open_editor: true
