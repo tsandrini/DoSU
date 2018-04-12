@@ -186,7 +186,20 @@ def compile(subjects, years, months):
 
         os.chdir(subject_dir)
 
-        command = "pandoc -o %s " % compiled_path
+        command = "pandoc"
+        additional_args = config.get('compiling.additional_arguments')
+        header_file = config.get('compiling.header_file')
+
+        if additional_args != None:
+            command += " %s " % additional_args
+
+        command += " -o %s " % compiled_path
+
+        if header_file != None:
+            if os.path.isfile('%s/%s' % (subject_dir, header_file)):
+                command += "%s " % header_file
+            else:
+                print ("Header file %s does not exist. Ignoring" % header_file)
 
         for year in years:
 
@@ -198,7 +211,7 @@ def compile(subjects, years, months):
             )
 
             if not os.path.isdir(year_dir):
-                print ("Subject %s has no notes for year %d" % (subject, year))
+                print ("Subject %s has no notes for year %d. Ignoring" % (subject, year))
                 continue
 
             for month in months:
@@ -210,7 +223,7 @@ def compile(subjects, years, months):
                 )
 
                 if not os.path.isdir(month_dir):
-                    print ("Subject %s has no notes for month %d in year %d" % (
+                    print ("Subject %s has no notes for month %d in year %d. Ignoring" % (
                         subject,
                         month,
                         year
