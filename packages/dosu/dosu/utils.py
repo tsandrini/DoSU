@@ -15,9 +15,10 @@ Created by Tomáš Sandrini
 
 import yaml
 import os
+from datetime import datetime
 
 
-from .settings import HOME
+from dosu.settings import HOME
 
 
 class Config:
@@ -29,7 +30,6 @@ class Config:
 
     def __init__(self):
         self.config = self.load_raw_config()
-        self.subjects = self.load_subjects()
 
     def load_raw_config(self):
         for config_path in self.config_paths:
@@ -40,19 +40,6 @@ class Config:
                 continue
         else:
             return None
-
-    def load_subjects(self):
-
-        if not self.config:
-            return None
-
-        base = self.get('general.root_dir')
-
-        if not base:
-            print ("DoSU root dir is not defined in config file")
-            sys.exit(2)
-
-        return set([name for name in os.listdir(base) if os.path.isdir(base + '/' + name)])
 
     def get(self, key, fallback=None):
         """
@@ -72,5 +59,15 @@ def load_file(path):
         data = f.read()
 
     return data
+
+
+def parse_semester_from_datetime(d: datetime) -> str:
+    y = d.year - 1 if (d.month < 10) else d.year
+    S_start = datetime(y, 10, 1)
+    S_end = datetime(y + 1, 2, 17)
+
+    s = 'S' if (d >= S_start and d <= S_end) else 'W'
+    return '{}{}{}'.format(s, y % 100, (y + 1) % 100)
+
 
 config = Config()

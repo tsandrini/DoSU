@@ -34,14 +34,12 @@ writing:
 templates:
     # Custom directory used as a base structure for creating other subjects
     subject_dir: 'your/subject/dir'
-    year_dir_prefix: 'year_'
-    month_dir_prefix: 'month_'
     note_prefix: 'note_'
 
     # Where to store compiled output
-    compiled_dir: 'compiled'
+    compiled_dir: 'dist'
     # Source directory for all notes
-    notes_dir: 'notes'
+    notes_dir: 'src'
 
     # This file is going to be included in every note if enabled
     meta_file: 'meta.md'

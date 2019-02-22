@@ -25,13 +25,13 @@ from datetime import datetime
 from distutils.dir_util import copy_tree
 
 
-from . import config
-from .utils import load_file
-from .decorators import trackcalls
+from dosu import config
+from dosu.utils import load_file
+from dosu.decorators import trackcalls
 
 
 @trackcalls
-def make(subjects):
+def make(subjects: list, semester: str) -> bool:
     """
     Makes (creates) given subjects
     """
@@ -39,41 +39,45 @@ def make(subjects):
     root_dir = config.get('general.root_dir')
 
     if not root_dir:
-        print ("Root dir is not defined in config file")
+        print("Root dir is not defined in config file")
         return False
 
     if not subject_dir:
-        print ("Subject template dir is not defined in config file")
+        print("Subject template dir is not defined in config file")
         return False
 
     for subject in subjects:
 
-        if subject in config.subjects:
-            print ("Subject %s already exists" % subject)
+        target = '%s/%s/%s' % (root_dir, semester, subject)
+
+        if os.path.exists(target):
+            print("Subject %s already exists" % subject)
             continue
 
-        copy_tree(subject_dir, root_dir + '/' + subject, preserve_symlinks=1)
+        copy_tree(subject_dir, target, preserve_symlinks=1)
 
     else:
         return True
 
     return False
 
+
 @trackcalls
-def delete(subjects):
+def delete(subjects: list, semester: str) -> bool:
     """
     Deletes given subjects
     """
     root_dir = config.get('general.root_dir')
 
     if not root_dir:
-        print ("Root dir is not defined in config file")
+        print("Root dir is not defined in config file")
         return False
 
     for subject in subjects:
 
-        if subject not in config.subjects:
-            print ("Subject %s does not exist" % subject)
+        target = '%s/%s/%s' % (root_dir, semester, subject)
+        if not os.path.exists(target):
+            print("Subject %s does not exist" % subject)
             continue
 
         shutil.rmtree(root_dir + '/' + subject)
@@ -83,32 +87,26 @@ def delete(subjects):
 
     return False
 
+
 @trackcalls
-def write(subject):
+def write(subject: str, semester: str) -> bool:
     """
     Starts notetaking for a given subject
     """
-    if subject not in config.subjects:
-        print ("Subject %s does not exist" % subject)
-        return False
-
     root_dir = config.get('general.root_dir')
 
     if not root_dir:
-        print ("Root dir is not defined in config file")
+        print("Root dir is not defined in config file")
         return False
 
     note_prefix = config.get('templates.note_prefix')
-    today = datetime.today()
-    subject_dir = root_dir + '/' + subject
-    path = '%s/%s/%s%d/%s%02d' % (
-        subject_dir,
-        config.get('templates.notes_dir'),
-        config.get('templates.year_dir_prefix'),
-        today.year % 1000,
-        config.get('templates.month_dir_prefix'),
-        today.month
-    )
+    subject_dir = '%s/%s/%s' % (root_dir, semester, subject)
+
+    if not os.path.exists(subject_dir):
+        print("Subject %s does not exist" % subject)
+        return False
+
+    path = '%s/%s' % (subject_dir, config.get('templates.notes_dir'))
 
     try:
         os.makedirs(path)
@@ -117,7 +115,8 @@ def write(subject):
         if e.errno != errno.EEXIST:
             raise
         else:
-            note_number = len(fnmatch.filter(os.listdir(path), note_prefix + '*.md'))
+            note_number = len(fnmatch.filter(
+                os.listdir(path), note_prefix + '*.md'))
 
     note_number += 1
 
@@ -141,22 +140,43 @@ def write(subject):
 
         tmp_pdf_path = subject_dir + '/' + '.tmp.pdf'
         subprocess.Popen(['pandoc', path, '-o', tmp_pdf_path]).wait()
+        cmd = config.get('writing.reader')
 
-        cmd = shlex.split(config.get('writing.reader'))
-        cmd.append(tmp_pdf_path)
+        if '{}' in cmd:
+            cmd = cmd.replace('{}', tmp_pdf_path)
+        else:
+            cmd += ' {}'.format(tmp_pdf_path)
+
+        cmd = shlex.split(cmd)
         subprocess.Popen(cmd)
 
     if config.get('writing.open_editor'):
-        cmd = shlex.split(config.get('writing.editor'))
-        cmd.append(path)
+        cmd = config.get('writing.editor')
+
+        if '{}' in cmd:
+            cmd = cmd.replace('{}', path)
+        else:
+            cmd += ' {}'.format(path)
+
+        cmd = shlex.split(cmd)
         subprocess.Popen(cmd)
+
+    onmodify_cmd = 'onmodify {} pandoc {} {} -o {}'.format(
+        path,
+        path,
+        config.get('compiling.additional_arguments'),
+        tmp_pdf_path
+    )
+    onmodify_cmd = shlex.split(onmodify_cmd)
+    subprocess.Popen(onmodify_cmd)
 
     sys.exit(0)
 
     return True
 
+
 @trackcalls
-def compile(subjects, years, months):
+def compile(subjects: list, semester: str) -> bool:
     """
     Compile notes for given subjects with selected years and months
     """
@@ -164,17 +184,17 @@ def compile(subjects, years, months):
     root_dir = config.get('general.root_dir')
 
     if not root_dir:
-        print ("Root dir is not defined in config file")
+        print("Root dir is not defined in config file")
         return False
 
     for subject in subjects:
 
-        if subject not in config.subjects:
-            print ("Subject %s does not exist" % subject)
+        subject_dir = '%s/%s/%s' % (root_dir, semester, subject)
+
+        if os.path.exists(subject_dir):
+            print("Subject %s does not exist" % subject)
             continue
 
-        today = datetime.today()
-        subject_dir = root_dir + '/' + subject
         compiled_path = '%s/%s/%s_%02d_%02d_%d.pdf' % (
             subject_dir,
             config.get('templates.compiled_dir'),
@@ -199,54 +219,40 @@ def compile(subjects, years, months):
             if os.path.isfile('%s/%s' % (subject_dir, header_file)):
                 command += "%s " % header_file
             else:
-                print ("Header file %s does not exist. Ignoring" % header_file)
+                print("Header file %s does not exist. Ignoring" % header_file)
 
-        for year in years:
+        command += '%s/%s*.md ' % (
+            month_dir,
+            config.get('templates.note_prefix')
+        )
 
-            year_dir = '%s/%s/%s%d' % (
-                subject_dir,
-                config.get('templates.notes_dir'),
-                config.get('templates.year_dir_prefix'),
-                year % 1000
-            )
-
-            if not os.path.isdir(year_dir):
-                print ("Subject %s has no notes for year %d. Ignoring" % (subject, year))
-                continue
-
-            for month in months:
-
-                month_dir = '%s/%s%02d' % (
-                    year_dir,
-                    config.get('templates.month_dir_prefix'),
-                    month
-                )
-
-                if not os.path.isdir(month_dir):
-                    print ("Subject %s has no notes for month %d in year %d. Ignoring" % (
-                        subject,
-                        month,
-                        year
-                    ))
-                    continue
-
-                command += '%s/%s*.md ' % (
-                    month_dir,
-                    config.get('templates.note_prefix')
-                )
+        command += '%s/%s/%s*.md' % (
+            subject_dir,
+            config.get('templates.notes_dir'),
+            config.get('templates.note_prefix')
+        )
 
         # Call cannot be used here since we are using wildcards
         os.system(command)
 
         return True
 
+
 @trackcalls
-def list():
+def list(semester: str):
     """
     Lists subjects
     """
 
-    for subject in config.subjects:
+    root_dir = config.get('general.root_dir')
+
+    if not root_dir:
+        print("Root dir is not defined in config file")
+        return False
+
+    path = '%s/%s/' % (root_dir, semester)
+
+    for subject in os.listdir(path):
         print(subject)
     else:
         return True

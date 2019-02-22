@@ -20,7 +20,7 @@ try:
     import dosu
 except (ImportError, SyntaxError):
     print("error: dosu requires Python 3.5 or greater.")
-    quit(1)
+    raise SystemExit
 
 
 
@@ -49,6 +49,9 @@ setuptools.setup(
     entry_points={
         "console_scripts": ["dosu=dosu.__main__:main"]
     },
+    scripts=[
+        'bin/onmodify'
+    ],
     python_requires=">=3.5",
     test_suite="tests",
     include_package_data=True

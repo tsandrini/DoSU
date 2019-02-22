@@ -29,6 +29,7 @@ def time_usage(func):
         return retval
     return wrapper
 
+
 def trackcalls(func):
     """
     Checks whether a function has been called

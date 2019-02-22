@@ -13,11 +13,11 @@ Created by Tomáš Sandrini
 """
 
 
-from .settings import __version__
+from dosu.settings import __version__
 
 
-from .utils import config
-from . import handler
+from dosu.utils import config
+from dosu import handler
 
 
 __all__ = [

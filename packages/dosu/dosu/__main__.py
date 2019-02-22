@@ -10,7 +10,7 @@ __/\\\\\\\\\\\\______________________/\\\\\\\\\\\____/\\\________/\\\_
 Created by Tomáš Sandrini
 """
 
-from . import __version__
+from dosu import __version__
 
 import argparse
 import os
@@ -18,8 +18,10 @@ import shutil
 import sys
 from datetime import datetime
 
-from . import handler
-from .actions import ValidateMonths, ValidateYears
+from dosu import handler
+from dosu.utils import parse_semester_from_datetime
+from dosu.actions import ValidateMonths, ValidateYears
+
 
 def get_args(args):
     """
@@ -32,43 +34,34 @@ def get_args(args):
         '-M',
         metavar='make',
         nargs='+',
-        help="Make (create) given subjects"
+        help="Makes (creates) given subjects"
     )
 
     arg.add_argument(
         '-C',
         metavar='compile',
         nargs='+',
-        help="Compile notes for a given subjects"
+        help="Compiles notes for a given subjects"
     )
 
     arg.add_argument(
         '-W',
         metavar='write',
-        help="Start note taking for a subject"
+        help="Starts note taking for a subject"
     )
 
     arg.add_argument(
         '-D',
         metavar='delete',
         nargs='+',
-        help="Delete subjects"
+        help="Deletes subjects"
     )
 
     arg.add_argument(
-        '-m',
-        metavar='month',
-        nargs='+',
-        action=ValidateMonths,
-        help="months"
-    )
-
-    arg.add_argument(
-        '-y',
-        metavar='year',
-        nargs='+',
-        action=ValidateYears,
-        help="years"
+        '-s',
+        metavar='semester',
+        # action=ValidateMonths,
+        help="Semester specification - default will be the current one"
     )
 
     arg.add_argument(
@@ -97,38 +90,31 @@ def process_args(args):
     """
     Process args.
     """
-    if not len(sys.argv) > 1 and False:
+    if not len(sys.argv) > 1:
         print("error: dosu needs to be given arguments to run.\n"
               "       Refer to \"dosu -h\" for more info.")
-        sys.exit(1)
+        raise SystemExit
 
     if args.q:
         sys.stdout = sys.stderr = open(os.devnull, 'w')
 
+    semester = args.s if args.s is not None \
+                else parse_semester_from_datetime(datetime.today())
+
     if args.M:
-        handler.make(args.M)
+        handler.make(args.M, semester)
 
     if args.D:
-        handler.delete(args.D)
+        handler.delete(args.D, semester)
 
     if args.W:
-        handler.write(args.W)
+        handler.write(args.W, semester)
 
     if args.C:
-        today = datetime.today()
-
-        years = args.y if args.y != None else [today.year]
-        months = args.m if args.m != None else [today.month]
-
-        if args.y:
-            months = args.m if args.m else [i for i in range(13)][1:]
-        else:
-            months = args.m if args.m else [today.month]
-
-        handler.compile(subjects=args.C, years=years, months=months)
+        handler.compile(args.C, semester)
 
     if args.l:
-        handler.list()
+        handler.list(semester)
 
     if args.v:
         print("DoSU ", __version__)
